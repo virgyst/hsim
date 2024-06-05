@@ -2,17 +2,17 @@
 from sys import path
 path.append('../')
 
-import pymulate as pym
-from chfsm import CHFSM, Transition, State
+import hsim.core.pymulate as pym
+from hsim.core.chfsm import CHFSM, Transition, State
 import pandas as pd
 import numpy as np
 from simpy import AnyOf
 from copy import deepcopy
 from random import choices,seed,normalvariate, expovariate
-from stores import Store, Box       
+from hsim.core.stores import Store, Box       
 from scipy import stats
 import dill
-import utils
+import hsim.core.utils
 
 
 
@@ -26,7 +26,7 @@ class Generator(pym.Generator):
         e = Entity()
         # e.serviceTime = dict()
         e.serviceTime['front'] = 10.52
-        e.serviceTime['drill'] = choices([3.5, 8.45, 9.65, 11.94],weights=[5,30,30,35])[0]
+        e.serviceTime['drill'] = choices([3.5, 8.45, 9.65, 11.94],weights=[5,30,30,35])[0] ## Insert the possibility of skipping this stage
         e.serviceTime['robot'] = choices([0, 81, 105, 108 ,120],weights=[91,3,2,2,2])[0]
         # e.serviceTime['camera'] = choices([3,9,12,18,24],weights=[2,3,1,2,2])[0]
         e.serviceTime['camera'] = 3.5+expovariate(1/7.1)

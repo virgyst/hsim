@@ -1,1 +1,6 @@
-
+numpy
+pandas
+simpy
+scipy
+dill
+plotly
