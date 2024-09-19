@@ -55,6 +55,9 @@ class Server(CHFSM):
     def put(self,item):
         return self.Store.put(item)  
     def subscribe(self,item):
+        # if self.um:
+        #     return self.um_event
+        # else:
         return self.Store.subscribe(item)
     class Starving(State):
         initial_state=True
@@ -68,6 +71,20 @@ class Server(CHFSM):
     T1=Transition(Starving, Working, lambda self: self.var.request)
     T2=Transition(Working, Blocking, lambda self: self.env.timeout(self.calculateServiceTime(self.var.entity)))
     T3=Transition(Blocking, Starving, lambda self: self.Next.put(self.var.entity),action=lambda self: self.var.request.confirm())
+    
+    # class OK(State):
+    #     def _do(self):
+    #         self.cond = 1
+    # class Degraded(State):
+    #     def _do(self):
+    #         self.cond = 1.66
+    # class UnderMaintenance(State):
+    #     def _do(self):
+    #         self.um = True
+    # T4 = Transition(Degraded, UnderMaintenance, lambda self: self.goMaintenance)
+    # T5 = Transition(UnderMaintenance, Starving, lambda self: self.env.timeout(100))
+    # T6 = Transition(Blocking, Degraded)
+    # T7 = Transition(Degraded, BlockingDeg)
 
 class MiniServer(Server):
     def __init__(self,env,name=None,serviceTime=None,serviceTimeFunction=None):
