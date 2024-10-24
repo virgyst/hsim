@@ -9,14 +9,14 @@ from pymoo.operators.sampling.rnd import PermutationRandomSampling
 from pymoo.operators.crossover.ox import OrderCrossover
 from pymoo.operators.mutation.inversion import InversionMutation
 from pymoo.termination.default import DefaultSingleObjectiveTermination
-
+from LAB import Lab
 # from ... import Lab, classi varie, etc
 
 class Problem(ElementwiseProblem):
     def __init__(self):
         # configuro il problema
-        # creo lab
-        # n_var = # jobs
+        lab=Lab()
+        n_var = 10
 
         super().__init__(n_var=10, n_obj=1)
     def _evaluate(self, x, out, *args, **kwargs):
@@ -26,7 +26,9 @@ class Problem(ElementwiseProblem):
         # sorto secondo x dove x = np.array([1,2,3,4,...])
         # eseguo codice per simulazione --> makespan
         # ci metto il modello che funziona SENZA RL
-        Cmax = 10
+        sorted_lista = [lista[i] for i in x]
+        self.lab.run(sorted_lista)
+        Cmax = self.lab.calculate_makespan()#10
         out["F"] = Cmax
 
 problem = Problem()
