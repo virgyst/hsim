@@ -1,34 +1,29 @@
 import numpy as np
+import hsim.core.pymulate as pym
 from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.optimize import minimize
-from pymoo.algorithms.soo.nonconvex.ga import GA
-from pymoo.optimize import minimize
-from pymoo.problems.single.traveling_salesman import create_random_tsp_problem
 from pymoo.operators.sampling.rnd import PermutationRandomSampling
 from pymoo.operators.crossover.ox import OrderCrossover
 from pymoo.operators.mutation.inversion import InversionMutation
 from pymoo.termination.default import DefaultSingleObjectiveTermination
-from LAB import Lab
-# from ... import Lab, classi varie, etc
+import time
+import copy
+import lavoro as lav
 
 class Problem(ElementwiseProblem):
     def __init__(self):
-        # configuro il problema
-        lab=Lab()
-        n_var = 10
-
+        self.lab = lav.Lab()
         super().__init__(n_var=10, n_obj=1)
+    
     def _evaluate(self, x, out, *args, **kwargs):
-        lista=lab.gate.store.items()
-        sorted_lista=[LISTA[i] for i in x] 
-        # passo al Lab la var "x" che è la sequenza da utilizzare
-        # sorto secondo x dove x = np.array([1,2,3,4,...])
-        # eseguo codice per simulazione --> makespan
-        # ci metto il modello che funziona SENZA RL
+        lista = lav.batchCreate(1, numJobs=10)
         sorted_lista = [lista[i] for i in x]
-        self.lab.run(sorted_lista)
-        Cmax = self.lab.calculate_makespan()#10
+        self.lab.gate.Store.items = copy.copy(sorted_lista)
+        self.lab.run(1100)
+        df = self.lab.env.state_log
+        Cmax = self.lab.calculate_makespan(df)
+        print(f"makespan: {Cmax}")
         out["F"] = Cmax
 
 problem = Problem()
@@ -41,9 +36,9 @@ algorithm = GA(
     eliminate_duplicates=True
 )
 
-res = minimize(problem,
-               algorithm,
-               seed=1,
-               verbose=False)
+res = minimize(problem, algorithm, seed=1, verbose=False)
+
+# print(f"Best solution found: {res.X}")
+# print(f"Function value: {res.F}")
 
 

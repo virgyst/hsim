@@ -21,29 +21,8 @@ from collections import deque
 import math
 import os
 import matplotlib.pyplot as plt
-# class Generator(pym.Generator):
-#     def __init__(self,env,name=None,serviceTime=2,serviceTimeFunction=None):
-#         super().__init__(env,name,serviceTime,serviceTimeFunction)
-#         self.count = 0
-#     def createEntity(self):
-#         self.count += 1
-#         # return Entity()
-#         e = Entity()
-#         # e.serviceTime = dict()
-#         e.serviceTime['front'] = 10.52
-#         e.serviceTime['drill'] = choices([3.5, 8.45, 9.65, 11.94],weights=[5,30,30,35])[0] ## Insert the possibility of skipping this stage
-#         e.serviceTime['robot'] = choices([0, 81, 105, 108 ,120],weights=[91,3,2,2,2])[0]
-#         # e.serviceTime['camera'] = choices([3,9,12,18,24],weights=[2,3,1,2,2])[0]
-#         e.serviceTime['camera'] = 3.5+expovariate(1/7.1)
-#         e.serviceTime['back'] = choices([3.5,10.57],weights=[0.1,0.9])[0]
-#         # e.serviceTime['press'] = choices([3,9,15])[0]
-#         if e.serviceTime['back']>0:
-#             e.serviceTime['press'] = 3.5+expovariate(1/9.5)
-#         else:
-#             e.serviceTime['press'] = 3.5
-#         e.serviceTime['manual'] = max(np.random.normal(9.2,1),0)
-#         return e
-        
+import time
+
 class Entity:
     def __init__(self,ID=None):
         self.ID = ID
@@ -249,14 +228,28 @@ def newEntity():
     e.serviceTime['manual'] = max(np.random.normal(9.2,2),0)
     return e
 
-def batchCreate(seed=1,numJobs=10):
+def batchCreate(seed=1,numJobs=10,return_both=False):
     np.random.seed(seed)
     jList = []
+    complist = []
     while len(jList)<numJobs:
         e=newEntity()
+        # num = round(np.random.triangular(1,numJobs/2,numJobs))
+        # # print(num)
+        # for i in range(num):
         jList.append(e)
-    return jList
-
+        entity_info = {
+                'id': e.ID,
+                'Entity': e,
+                'serviceTime': e.serviceTime
+                }
+        complist.append(entity_info)
+        if len(jList)>=numJobs:  # l'ho aggiunto io per evitare che si creino più entità di quelle richieste
+            break
+    if return_both:
+        return jList, complist
+    else:
+        return jList
 
 class Lab:
     def __init__(self):
@@ -386,8 +379,11 @@ class Lab:
         # return pd.DataFrame(self.env.state_log)
         return self.env.state_log
 
-
-
+    def calculate_makespan(self,state_log):
+        df = pd.DataFrame(state_log, columns=["Resource","ResourceName","State","StateName","Entity","?","timeIn","timeOut"])
+        df= df.loc[df.ResourceName.isin(["front","drill","robot","camera","back","press","manual"])]
+        mks=df.timeOut.max()-df.timeIn.min()
+        return mks
 
 
 # import sys
