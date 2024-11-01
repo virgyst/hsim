@@ -382,7 +382,8 @@ class Lab:
     def calculate_makespan(self,state_log):
         df = pd.DataFrame(state_log, columns=["Resource","ResourceName","State","StateName","Entity","?","timeIn","timeOut"])
         df= df.loc[df.ResourceName.isin(["front","drill","robot","camera","back","press","manual"])]
-        mks=df.timeOut.max()-df.timeIn.min()
+        mks=df.timeOut.max()
+        # print(mks)
         return mks
 
 

@@ -95,13 +95,24 @@ class Store(FilterStore):
         return len(self.items)
     def subscribe(self,item=None,filter=None):
         return Subscription(self,item)
-    def _do_get(self, event):        
-        for item in self.items:
-            if event.filter(item):
-                if not isinstance(event,Subscription):
-                    event.succeed(self.items.pop(0))
+    # def _do_get(self, event):      
+    #     for item in self.items:
+    #         if event.filter(item):
+    #             if not isinstance(event,Subscription):
+    #                 event.succeed(self.items.pop(0))
+    #                 return
+    #             else:
+    #                 event.succeed()
+    #                 return True
+    def _do_get(self, event):      
+        for index, item in enumerate(self.items):
+            if event.filter(item):  # Applica il filtro all'elemento
+                if not isinstance(event, Subscription):
+                    # Rimuove l'elemento corrente che ha passato il filtro
+                    event.succeed(self.items.pop(index))
                     return
                 else:
+                    # Chiama succeed senza rimuovere l'elemento
                     event.succeed()
                     return True
     def _do_put(self, event):
