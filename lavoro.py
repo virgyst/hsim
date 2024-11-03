@@ -213,8 +213,21 @@ def newDT():
     lab = globals()['lab']
     deepcopy(lab)
 
+# def newEntity():
+#     seed(time.time())
+#     e = Entity()
+#     e.serviceTime['front'] = 10.52
+#     e.serviceTime['drill'] = choices([30, 40, 50, 20],weights=[5,30,30,35])[0]
+#     e.serviceTime['robot'] = choices([0, 81, 105, 108 ,120],weights=[91,3,2,2,2])[0]
+#     e.serviceTime['camera'] = 3.5+expovariate(1/7.1)
+#     e.serviceTime['back'] = choices([3.5,10.57],weights=[0.1,0.9])[0]
+#     if e.serviceTime['back']>0:
+#         e.serviceTime['press'] = 3.5+expovariate(1/7.5)
+#     else:
+#         e.serviceTime['press'] = 3.5
+#     e.serviceTime['manual'] = max(np.random.normal(9.2,2),0)
+#     return e
 def newEntity():
-    seed(time.time())
     e = Entity()
     e.serviceTime['front'] = 10.52
     e.serviceTime['drill'] = choices([30, 40, 50, 20],weights=[5,30,30,35])[0]
@@ -227,9 +240,7 @@ def newEntity():
         e.serviceTime['press'] = 3.5
     e.serviceTime['manual'] = max(np.random.normal(9.2,2),0)
     return e
-
 def batchCreate(seed=1,numJobs=10,return_both=False):
-    np.random.seed(seed)
     jList = []
     complist = []
     while len(jList)<numJobs:
